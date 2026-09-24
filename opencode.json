@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "project": "practica-kiro-sdd",
+  "agents": {
+    "orquestador": ".opencode/agents/orquestador.md",
+    "implementador": ".opencode/agents/implementador.md",
+    "revisor": ".opencode/agents/revisor.md",
+    "verificador": ".opencode/agents/verificador.md"
+  }
+}

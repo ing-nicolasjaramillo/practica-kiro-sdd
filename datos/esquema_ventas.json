@@ -1,0 +1,9 @@
+{
+  "campos": [
+    {"nombre": "id", "tipo": "entero", "requerido": true},
+    {"nombre": "fecha", "tipo": "fecha", "formato": "YYYY-MM-DD", "requerido": true},
+    {"nombre": "producto", "tipo": "texto", "requerido": true},
+    {"nombre": "cantidad", "tipo": "entero", "requerido": true},
+    {"nombre": "precio", "tipo": "decimal", "requerido": true}
+  ]
+}
