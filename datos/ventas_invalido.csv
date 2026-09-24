@@ -1,4 +1,5 @@
-id,fecha,producto,cantidad,precio
-1,2024-01-15,Laptop,dos,1500.00
-2,fecha-invalida,Mouse,5,25.99
-3,2024-01-17,,3,45.50
+id_venta,fecha,cliente,cantidad,valor_unitario
+1,2026-09-01,Ferretería Central,3,15000.50
+2,2026/09/02,Distribuidora Andina,diez,8200
+2,2026-09-03,,1,120000
+4,2026-09-04,Tienda La Esquina,2,

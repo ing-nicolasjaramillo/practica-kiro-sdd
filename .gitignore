@@ -11,8 +11,11 @@ build/
 
 # Entornos virtuales
 .venv/
-venv/
-env/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+reportes/
 
 # Testing
 .pytest_cache/

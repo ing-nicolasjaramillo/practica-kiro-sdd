@@ -1,4 +1,4 @@
-id,fecha,producto,cantidad,precio
-1,2024-01-15,Laptop,2,1500.00
-2,2024-01-16,Mouse,5,25.99
-3,2024-01-17,Teclado,3,45.50
+id_venta,fecha,cliente,cantidad,valor_unitario,observacion
+1,2026-09-01,Ferretería Central,3,15000.50,
+2,2026-09-02,Distribuidora Andina,10,8200,Entrega parcial
+3,2026-09-03,Tienda La Esquina,1,120000,

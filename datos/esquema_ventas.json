@@ -1,9 +1,12 @@
 {
-  "campos": [
-    {"nombre": "id", "tipo": "entero", "requerido": true},
-    {"nombre": "fecha", "tipo": "fecha", "formato": "YYYY-MM-DD", "requerido": true},
-    {"nombre": "producto", "tipo": "texto", "requerido": true},
-    {"nombre": "cantidad", "tipo": "entero", "requerido": true},
-    {"nombre": "precio", "tipo": "decimal", "requerido": true}
-  ]
+  "delimitador": ",",
+  "columnas": [
+    {"nombre": "id_venta", "tipo": "entero", "obligatoria": true},
+    {"nombre": "fecha", "tipo": "fecha", "formato": "%Y-%m-%d", "obligatoria": true},
+    {"nombre": "cliente", "tipo": "texto", "obligatoria": true},
+    {"nombre": "cantidad", "tipo": "entero", "obligatoria": true},
+    {"nombre": "valor_unitario", "tipo": "decimal", "obligatoria": true},
+    {"nombre": "observacion", "tipo": "texto", "obligatoria": false}
+  ],
+  "clave_unica": ["id_venta"]
 }
