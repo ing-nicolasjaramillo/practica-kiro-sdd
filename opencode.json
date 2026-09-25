@@ -1,10 +1,20 @@
 {
-  "version": "1.0",
-  "project": "practica-kiro-sdd",
-  "agents": {
-    "orquestador": ".opencode/agents/orquestador.md",
-    "implementador": ".opencode/agents/implementador.md",
-    "revisor": ".opencode/agents/revisor.md",
-    "verificador": ".opencode/agents/verificador.md"
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [".kiro/steering/*.md"], 
+  "permission": {
+    "edit": "ask",
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "python -m pytest*": "allow",
+      "pytest*": "allow",
+      "git commit*": "deny",
+      "git push*": "deny",
+      "Remove-Item*": "deny",
+      "rm *": "deny"
+    },
+    "webfetch": "deny"
   }
 }
+

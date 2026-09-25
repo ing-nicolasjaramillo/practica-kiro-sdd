@@ -1,0 +1,1 @@
+En la carpeta de agentes, el nombre de cada archivo es el nombre del agente, y así lo invocas con @.
