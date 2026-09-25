@@ -6,8 +6,13 @@ puras de validación. Ninguna función hace I/O ni llama a sys.exit.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
+from datetime import datetime
+from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING
+
+from validador.lector import FilaCSV
 
 if TYPE_CHECKING:
     from validador.esquema import Esquema
@@ -69,11 +74,6 @@ def verificar_columnas_faltantes(
     return hallazgos
 
 
-import re
-from datetime import datetime
-from validador.lector import FilaCSV
-
-
 def _es_entero_valido(valor: str) -> bool:
     """Devuelve True si la cadena representa un entero puro sin decimales ni espacios.
 
@@ -87,15 +87,26 @@ def _es_decimal_valido(valor: str) -> bool:
     """Devuelve True si la cadena representa un numero con punto decimal y sin espacios.
 
     Acepta: "15000.50", "8200", "-3.5".
-    Rechaza: "15.000,50", " 3.5", "", "Inf", "NaN".
-    Solo permite digitos con punto como separador decimal y signo negativo opcional.
+    Rechaza: "15.000,50", " 3.5", "", "Inf", "NaN", "+3.5", ".5", "5.", "1e5".
+
+    La validacion combina dos pasos:
+
+    1. Nucleo numerico: decimal.Decimal convierte la cadena. Si no es un numero
+       lanza InvalidOperation y se devuelve False. Los valores no finitos
+       ("Inf", "Infinity", "NaN") si los parsea, asi que se descartan con
+       is_finite(), porque el criterio 4.3 no los acepta.
+    2. Guarda de forma: Decimal por si solo admite espacios alrededor, signo
+       mas, parte entera o decimal omitidas y notacion con exponente; la
+       expresion regular exige el patron -?digitos(.digitos)? del criterio 4.3
+       (punto como separador, sin espacios, sin coma, sin exponente).
     """
-    if " " in valor or "," in valor:
+    try:
+        numero = Decimal(valor)
+    except InvalidOperation:
         return False
-    # Rechaza valores especiales como Inf, NaN, Infinity que Decimal() aceptaria
-    if not re.fullmatch(r"-?\d+(\.\d+)?", valor):
+    if not numero.is_finite():
         return False
-    return True
+    return bool(re.fullmatch(r"-?\d+(\.\d+)?", valor))
 
 
 def _es_fecha_valida(valor: str, formato: str) -> bool:

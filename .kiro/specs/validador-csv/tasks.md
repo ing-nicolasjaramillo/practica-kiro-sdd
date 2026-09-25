@@ -126,7 +126,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     nombre de prueba está repetido en el archivo
   - No se escribe código de producción ni pruebas nuevas en esta tarea
   - _Requisitos: los cubiertos por las tareas 4, 5.3 y 6.2 (sin comportamiento nuevo)_
-- [ ] 0.2 Ajustes de calidad en src/validador/reglas.py
+- [x] 0.2 Ajustes de calidad en src/validador/reglas.py
   - Mover los imports al inicio del archivo
   - Reimplementar _es_decimal_valido con decimal.Decimal, como exige design.md;
     las pruebas existentes del requisito 4.3 deben seguir en verde

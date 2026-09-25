@@ -361,6 +361,48 @@ def test_req_4_3_decimal_con_coma_invalido() -> None:
     assert hallazgos[0].valor == "15.000,50"
 
 
+@pytest.mark.parametrize(
+    "valor",
+    [
+        " 3.5",
+        "3.5 ",
+        "Inf",
+        "NaN",
+        "+3.5",
+        ".5",
+        "5.",
+        "1e5",
+    ],
+    ids=[
+        "espacio_inicial",
+        "espacio_final",
+        "inf",
+        "nan",
+        "signo_mas",
+        "sin_parte_entera",
+        "sin_parte_decimal",
+        "exponente",
+    ],
+)
+def test_req_4_3_decimal_forma_no_valida_invalido(valor: str) -> None:
+    """Criterio 4.3: con espacios o fuera del formato con punto se genera tipo_invalido.
+
+    Criterio 4.3: "cadenas con coma decimal o espacios deben generar hallazgo
+    tipo_invalido". La coma ya la cubre otro test; aqui se cubren los espacios.
+    Ademas fija el comportamiento que el refactor con decimal.Decimal debe
+    preservar: 'Inf', 'NaN', '+3.5', '.5', '5.' y '1e5' los aceptaria
+    Decimal('...') por si solo, pero no cumplen el formato del criterio 4.3.
+    """
+    esquema = _esquema_tipos(("precio", "decimal", True))
+    filas = [_fila(2, precio=valor)]
+
+    hallazgos = verificar_tipos(filas, esquema)
+
+    assert len(hallazgos) == 1
+    assert hallazgos[0].regla == "tipo_invalido"
+    assert hallazgos[0].valor == valor
+
+
 def test_req_4_4_fecha_valida() -> None:
     """Un valor que coincide con el formato de fecha no genera hallazgo."""
     esquema = _esquema_tipos(("fecha", "fecha", True, "%Y-%m-%d"))
