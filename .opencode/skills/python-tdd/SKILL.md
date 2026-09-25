@@ -21,6 +21,9 @@ description: Ciclo TDD con pytest para el proyecto validador-csv. Úsala siempre
 - Mejora nombres y elimina duplicación sin cambiar comportamiento.
 - Ejecuta la suite completa: python -m pytest -q. Debe quedar en verde.
 
+## 4. Sección de pruebas de propiedad
+- Verificar la propiedad mediante pruebas
+
 ## Patrones útiles
 Archivo temporal:
 ```python

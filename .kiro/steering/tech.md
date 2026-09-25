@@ -38,3 +38,4 @@ inclusion: always
   test_req_<requisito>_<criterio>_<caso>. Ej: test_req_4_2_fecha_formato_invalido.
 - Datos pequeños en tests/datos/; los grandes se generan con tmp_path.
 - Ninguna prueba depende de red ni de rutas absolutas.
+- Aceptar Hypothesis.
