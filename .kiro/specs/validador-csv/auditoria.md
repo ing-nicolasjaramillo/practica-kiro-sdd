@@ -39,7 +39,7 @@
 ### Tarea 6 — Regla 3 — ROTA
 
 - 6.1 [x] ✓: verificar_vacios (reglas.py:175-211) correcto.
-- 6.2 [-] ✗: los 4 tests existen (test_reglas.py:296-350) pero los 4 FALLAN.
+- 6.2 [x] ✗: los 4 tests existen (test_reglas.py:296-350) pero los 4 FALLAN.
   El bloque de la 5.3, escrito después (test_reglas.py:361), redefinió _fila
   con firma **campos en lugar de campos: dict, y las llamadas
   _fila(2, {"nombre": ""}) lanzan TypeError. Son exactamente los 4 fallos de
