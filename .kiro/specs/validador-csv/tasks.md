@@ -117,7 +117,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - _Requisitos: 3.1_
 
 - [ ] 0. Reconciliación del avance de Kiro (ver auditoria.md)
-- [ ] 0.1 Reparar tests/test_reglas.py sin cambiar comportamiento
+- [x] 0.1 Reparar tests/test_reglas.py sin cambiar comportamiento
   - Eliminar el bloque de pruebas duplicado que queda sombreado y conservar
     una sola versión de cada prueba
   - Dejar una sola definición de _esquema_simple y de _fila, con firma única,

@@ -47,100 +47,6 @@ def test_req_0_hallazgo_es_inmutable() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Tarea 4.2 — Regla 1: verificar_columnas_faltantes
-# ---------------------------------------------------------------------------
-
-from validador.esquema import ColumnaEsquema, Esquema
-from validador.reglas import verificar_columnas_faltantes
-
-
-def _esquema_simple(*columnas: ColumnaEsquema) -> Esquema:
-    """Construye un Esquema minimo con las columnas indicadas."""
-    return Esquema(
-        columnas=tuple(columnas),
-        clave_unica=(),
-        delimitador=",",
-    )
-
-
-def test_req_3_1_columna_faltante_unica() -> None:
-    """Una columna obligatoria ausente en la cabecera genera exactamente 1 hallazgo."""
-    esquema = _esquema_simple(
-        ColumnaEsquema(nombre="id_venta", tipo="entero", obligatoria=True),
-        ColumnaEsquema(nombre="fecha", tipo="fecha", obligatoria=True, formato="%Y-%m-%d"),
-    )
-    cabecera = ["fecha"]  # falta "id_venta"
-
-    hallazgos = verificar_columnas_faltantes(cabecera, esquema)
-
-    assert len(hallazgos) == 1
-    assert hallazgos[0].regla == "columna_faltante"
-    assert hallazgos[0].fila == 1
-    assert hallazgos[0].columna == "id_venta"
-    assert hallazgos[0].valor == ""
-
-
-def test_req_3_1_columnas_faltantes_multiples() -> None:
-    """Dos columnas obligatorias ausentes generan exactamente 2 hallazgos."""
-    esquema = _esquema_simple(
-        ColumnaEsquema(nombre="id_venta", tipo="entero", obligatoria=True),
-        ColumnaEsquema(nombre="fecha", tipo="fecha", obligatoria=True, formato="%Y-%m-%d"),
-        ColumnaEsquema(nombre="cliente", tipo="texto", obligatoria=True),
-    )
-    cabecera = ["cliente"]  # faltan "id_venta" y "fecha"
-
-    hallazgos = verificar_columnas_faltantes(cabecera, esquema)
-
-    assert len(hallazgos) == 2
-    columnas_faltantes = {h.columna for h in hallazgos}
-    assert columnas_faltantes == {"id_venta", "fecha"}
-    for h in hallazgos:
-        assert h.regla == "columna_faltante"
-        assert h.fila == 1
-        assert h.valor == ""
-
-
-def test_req_3_3_todas_presentes() -> None:
-    """Cuando todas las columnas obligatorias estan en la cabecera, no hay hallazgos."""
-    esquema = _esquema_simple(
-        ColumnaEsquema(nombre="id_venta", tipo="entero", obligatoria=True),
-        ColumnaEsquema(nombre="fecha", tipo="fecha", obligatoria=True, formato="%Y-%m-%d"),
-    )
-    cabecera = ["id_venta", "fecha"]
-
-    hallazgos = verificar_columnas_faltantes(cabecera, esquema)
-
-    assert hallazgos == []
-
-
-def test_req_3_4_columna_extra_ignorada() -> None:
-    """Una columna extra en la cabecera (no en el esquema) no genera ningun hallazgo."""
-    esquema = _esquema_simple(
-        ColumnaEsquema(nombre="id_venta", tipo="entero", obligatoria=True),
-    )
-    cabecera = ["id_venta", "columna_extra_desconocida"]
-
-    hallazgos = verificar_columnas_faltantes(cabecera, esquema)
-
-    assert hallazgos == []
-
-
-def test_req_3_5_case_sensitive() -> None:
-    """La comparacion de columnas es sensible a mayusculas: 'Fecha' != 'fecha'."""
-    esquema = _esquema_simple(
-        ColumnaEsquema(nombre="fecha", tipo="fecha", obligatoria=True, formato="%Y-%m-%d"),
-    )
-    cabecera = ["Fecha"]  # mayuscula distinta al esquema
-
-    hallazgos = verificar_columnas_faltantes(cabecera, esquema)
-
-    assert len(hallazgos) == 1
-    assert hallazgos[0].columna == "fecha"
-    assert hallazgos[0].regla == "columna_faltante"
-    assert hallazgos[0].fila == 1
-
-
-# ---------------------------------------------------------------------------
 # Tarea 4.2 — tests de ejemplo para verificar_columnas_faltantes
 # ---------------------------------------------------------------------------
 
@@ -279,11 +185,6 @@ from validador.lector import FilaCSV
 from validador.reglas import verificar_tipos, verificar_vacios
 
 
-def _fila(numero: int, campos: dict[str, str]) -> FilaCSV:
-    """Construye un FilaCSV de prueba."""
-    return FilaCSV(numero=numero, campos=campos)
-
-
 def _esquema_vacios(nombres: list[str], obligatorias: list[bool]) -> Esquema:
     """Construye un Esquema con columnas de tipo texto según obligatoriedad indicada."""
     columnas = tuple(
@@ -296,7 +197,7 @@ def _esquema_vacios(nombres: list[str], obligatorias: list[bool]) -> Esquema:
 def test_req_5_1_vacio_en_obligatoria_genera_hallazgo() -> None:
     """Celda con cadena vacia en columna obligatoria genera exactamente 1 hallazgo vacio_obligatorio."""
     esquema = _esquema_vacios(["nombre"], [True])
-    filas = [_fila(2, {"nombre": ""})]
+    filas = [_fila(2, nombre="")]
 
     hallazgos = verificar_vacios(filas, esquema)
 
@@ -310,7 +211,7 @@ def test_req_5_1_vacio_en_obligatoria_genera_hallazgo() -> None:
 def test_req_5_1_espacios_en_obligatoria_genera_hallazgo() -> None:
     """Celda compuesta solo de espacios en columna obligatoria genera hallazgo vacio_obligatorio."""
     esquema = _esquema_vacios(["nombre"], [True])
-    filas = [_fila(2, {"nombre": "   "})]
+    filas = [_fila(2, nombre="   ")]
 
     hallazgos = verificar_vacios(filas, esquema)
 
@@ -330,7 +231,7 @@ def test_req_5_1_vacio_no_genera_tipo_invalido() -> None:
         clave_unica=(),
         delimitador=",",
     )
-    filas = [_fila(2, {"cantidad": ""})]
+    filas = [_fila(2, cantidad="")]
 
     hallazgos_tipo = verificar_tipos(filas, esquema_entero)
 
@@ -343,7 +244,7 @@ def test_req_5_1_vacio_no_genera_tipo_invalido() -> None:
 def test_req_5_2_vacio_en_no_obligatoria_ignorado() -> None:
     """Celda vacia en columna no obligatoria no genera ningun hallazgo."""
     esquema = _esquema_vacios(["observacion"], [False])
-    filas = [_fila(2, {"observacion": ""})]
+    filas = [_fila(2, observacion="")]
 
     hallazgos = verificar_vacios(filas, esquema)
 
