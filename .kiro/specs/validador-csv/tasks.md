@@ -116,6 +116,22 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - `@settings(max_examples=200)`.
     - _Requisitos: 3.1_
 
+- [ ] 0. Reconciliación del avance de Kiro (ver auditoria.md)
+- [ ] 0.1 Reparar tests/test_reglas.py sin cambiar comportamiento
+  - Eliminar el bloque de pruebas duplicado que queda sombreado y conservar
+    una sola versión de cada prueba
+  - Dejar una sola definición de _esquema_simple y de _fila, con firma única,
+    y ajustar todas sus llamadas
+  - Terminado cuando: python -m pytest -q da 0 fallos y 0 errores, y ningún
+    nombre de prueba está repetido en el archivo
+  - No se escribe código de producción ni pruebas nuevas en esta tarea
+  - _Requisitos: los cubiertos por las tareas 4, 5.3 y 6.2 (sin comportamiento nuevo)_
+- [ ] 0.2 Ajustes de calidad en src/validador/reglas.py
+  - Mover los imports al inicio del archivo
+  - Reimplementar _es_decimal_valido con decimal.Decimal, como exige design.md;
+    las pruebas existentes del requisito 4.3 deben seguir en verde
+  - _Requisitos: 4.3_
+
 - [ ] 5. `reglas.py` — Regla 2: validación de tipos
   - [x] 5.1 Implementar las funciones privadas `_es_entero_valido`, `_es_decimal_valido`
         y `_es_fecha_valida` en `src/validador/reglas.py`.
@@ -130,7 +146,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - Solo procesa columnas definidas en el esquema que existen en la fila.
     - _Requisitos: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
 
-  - [ ] 5.3 Escribir tests de ejemplo en `tests/test_reglas.py`.
+  - [x] 5.3 Escribir tests de ejemplo en `tests/test_reglas.py`.
     - `test_req_4_1_tipo_invalido_genera_hallazgo`: valor no convertible → hallazgo.
     - `test_req_4_2_entero_valido`: `"10"`, `"-3"`, `"0"` no generan hallazgo.
     - `test_req_4_2_entero_con_decimal_invalido`: `"10.0"` genera hallazgo.
@@ -306,7 +322,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - _Requisitos: 1.1, 2.1, 3.2, 7.3, 7.4, 8.1, 8.2, 9.1, 9.2_
 
 - [ ] 12. `pyproject.toml` — añadir hypothesis al grupo dev
-  - [ ] 12.1 Actualizar `[project.optional-dependencies]` en `pyproject.toml` para añadir
+  - [x] 12.1 Actualizar `[project.optional-dependencies]` en `pyproject.toml` para añadir
          `"hypothesis>=6"` al grupo `dev`.
     - El grupo queda: `dev = ["pytest>=8", "hypothesis>=6"]`.
     - _Requisitos: ninguno (infraestructura de desarrollo)_
