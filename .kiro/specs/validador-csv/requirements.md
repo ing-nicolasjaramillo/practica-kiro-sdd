@@ -86,6 +86,10 @@ El **Validador CSV** es una herramienta de línea de comandos en Python que veri
 4.2. CUANDO el tipo de la columna es `entero`, EL SISTEMA DEBERÁ aceptar únicamente cadenas que representen un número entero sin decimales y sin espacios adicionales (p. ej. `"10"`, `"-3"`); cadenas como `"10.0"`, `"diez"` o `" 10"` deben generar hallazgo `tipo_invalido`.
 
 4.3. CUANDO el tipo de la columna es `decimal`, EL SISTEMA DEBERÁ aceptar cadenas que representen números con o sin parte decimal usando punto como separador y sin espacios adicionales (p. ej. `"15000.50"`, `"8200"`, `"-3.5"`); cadenas con coma decimal o espacios deben generar hallazgo `tipo_invalido`.
+    Nota 4.3: "número" significa signo "-" opcional, al menos un dígito antes
+    del punto y, si hay punto, al menos un dígito después. Se rechazan también,
+    con hallazgo `tipo_invalido`: notación científica (`1e5`), `Inf`, `NaN`,
+    signo `+` (`+3.5`), punto sin dígito a la izquierda (`.5`) o a la derecha (`5.`).
 
 4.4. CUANDO el tipo de la columna es `fecha`, EL SISTEMA DEBERÁ aceptar únicamente cadenas que coincidan exactamente con el formato definido en el esquema; `datetime.strptime` con el formato del esquema deberá completarse sin error y sin caracteres sobrantes.
 
