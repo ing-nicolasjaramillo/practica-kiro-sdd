@@ -170,7 +170,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - `@settings(max_examples=200)` en cada uno.
     - _Requisitos: 4.1, 4.2, 4.3_
 
-- [ ] 6. `reglas.py` — Regla 3: vacíos en columnas obligatorias
+- [x] 6. `reglas.py` — Regla 3: vacíos en columnas obligatorias
   - [x] 6.1 Implementar `verificar_vacios(filas, esquema) -> list[Hallazgo]` en
         `src/validador/reglas.py`.
     - Celda vacía = `str.strip() == ""`.
