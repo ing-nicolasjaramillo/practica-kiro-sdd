@@ -196,198 +196,55 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - _Requisitos: 5.1_
 
 - [ ] 7. `reglas.py` — Regla 4: duplicados por clave única
-  - [ ] 7.1 Implementar `verificar_duplicados(filas, esquema) -> list[Hallazgo]` en
-        `src/validador/reglas.py`.
-    - Clave = concatenación de valores de `clave_unica` separados con `|`.
-    - La primera aparición no genera hallazgo; las siguientes sí.
+  - [ ] 7.1 Implementar `verificar_duplicados(filas, esquema) -> list[Hallazgo]`
+    - Clave = valores de `clave_unica` unidos con `|`; la primera aparición no genera hallazgo.
     - Filas con algún valor vacío en la clave se omiten.
-    - `mensaje` incluye el número de fila de la primera aparición.
-    - _Requisitos: 6.1, 6.2, 6.3, 6.4_
+    - `mensaje` incluye la fila de la primera aparición.
+    - Pruebas (3): `test_req_6_1_duplicado_segunda_aparicion`,
+      `test_req_6_2_mensaje_incluye_primera_fila`, `test_req_6_4_clave_con_vacio_ignorada`.
+    - _Requisitos: 6.1, 6.2, 6.4_
 
-  - [ ] 7.2 Escribir tests de ejemplo en `tests/test_reglas.py`.
-    - `test_req_6_1_duplicado_segunda_aparicion`: 2 filas con misma clave → 1 hallazgo
-      en la segunda.
-    - `test_req_6_1_duplicado_tres_apariciones`: 3 filas con misma clave → 2 hallazgos.
-    - `test_req_6_2_mensaje_incluye_primera_fila`: `mensaje` del hallazgo referencia la
-      fila de la primera aparición.
-    - `test_req_6_3_clave_compuesta_valor_concatenado`: clave de dos columnas → `valor`
-      es `"v1|v2"`.
-    - `test_req_6_4_clave_con_vacio_ignorada`: fila con valor vacío en la clave → sin
-      hallazgo.
-    - _Requisitos: 6.1, 6.2, 6.3, 6.4_
+- [ ] 8. `reporte.py` — consola y JSON
+  - [ ] 8.1 Implementar `formatear_consola(...) -> str` y `escribir_json(...) -> None`
+    - Consola: total de filas, recuento por regla y detalle ordenado por fila;
+      "Sin hallazgos" si la lista está vacía.
+    - JSON: `archivo`, `esquema`, `total_filas`, `total_hallazgos`, `hallazgos`;
+      `ensure_ascii=False`.
+    - Pruebas (3): `test_req_7_2_detalle_ordenado_por_fila`,
+      `test_req_7_3_sin_hallazgos_mensaje`, `test_req_8_1_json_estructura_correcta`.
+    - _Requisitos: 7.2, 7.3, 8.1_
 
-  - [ ] 7.3 Escribir property tests en `tests/test_reglas.py` usando Hypothesis.
-    - `test_req_6_1_duplicados_propiedad` (Property 13): grupo de `N` filas con misma
-      clave → exactamente `N - 1` hallazgos.
-    - `test_req_6_2_mensaje_primera_aparicion_propiedad` (Property 14): para par
-      `(f1, f2)` con `f2 > f1`, el `mensaje` del hallazgo de `f2` contiene `f1`.
-    - `test_req_6_3_clave_compuesta_propiedad` (Property 15): el campo `valor` del
-      hallazgo es la concatenación con `|` en el orden de `clave_unica`.
-    - `@settings(max_examples=200)`.
-    - _Requisitos: 6.1, 6.2, 6.3_
+- [ ] 9. `cli.py` — interfaz y coordinación
+  - [ ] 9.1 Implementar `cli.py` (parser, ejecución y `main`) según design.md
+    - Orden: esquema → CSV → columnas faltantes (si hay, no se ejecutan las reglas 2–4)
+      → tipos, vacíos y duplicados → reporte.
+    - Códigos: 0 sin hallazgos, 1 con hallazgos, 2 ante `OSError`/`ValueError` (mensaje a stderr).
+    - `print` y `sys.exit` solo en este módulo.
+    - Pruebas (2) en `tests/test_cli.py`: `test_req_9_1_csv_valido_codigo_0`,
+      `test_req_2_1_csv_inexistente_codigo_2`.
+    - _Requisitos: 9.1, 2.1_
 
-- [ ] 8. Checkpoint — verificar que todos los tests de reglas pasen
-  - Ejecutar `python -m pytest tests/test_reglas.py tests/test_esquema.py tests/test_lector.py -v`.
-  - Resolver cualquier fallo antes de continuar. Preguntar al usuario si hay dudas.
-
-- [ ] 9. `reporte.py` — formato consola
-  - [ ] 9.1 Implementar `formatear_consola(ruta_csv, total_filas, hallazgos) -> str` en
-        `src/validador/reporte.py`.
-    - Resumen: total de filas y recuento por tipo (omite tipos con recuento 0).
-    - Detalle: una línea por hallazgo, ordenada por `fila` ascendente.
-    - Sin hallazgos: incluye la línea `"Sin hallazgos"`.
-    - No imprime nada; devuelve `str`.
-    - _Requisitos: 7.1, 7.2, 7.3_
-
-  - [ ] 9.2 Escribir tests de ejemplo en `tests/test_reporte.py`.
-    - `test_req_7_1_resumen_incluye_total_filas`: texto contiene el número de filas.
-    - `test_req_7_1_resumen_tipos_con_cero_omitidos`: tipos con recuento 0 no aparecen.
-    - `test_req_7_2_detalle_ordenado_por_fila`: hallazgos desordenados → salida
-      ordenada ascendente.
-    - `test_req_7_3_sin_hallazgos_mensaje`: sin hallazgos → texto contiene
-      `"Sin hallazgos"`.
-    - _Requisitos: 7.1, 7.2, 7.3_
-
-  - [ ] 9.3 Escribir property tests en `tests/test_reporte.py` usando Hypothesis.
-    - `test_req_7_1_resumen_refleja_hallazgos_propiedad` (Property 16): recuentos en
-      el texto coinciden con los de la lista; ningún tipo con recuento 0 aparece.
-    - `test_req_7_2_detalle_orden_propiedad` (Property 17): para cualquier orden de
-      entrada, el detalle del texto está ordenado por `fila` ascendente.
-    - `@settings(max_examples=200)`.
-    - _Requisitos: 7.1, 7.2_
-
-- [ ] 10. `reporte.py` — reporte JSON
-  - [ ] 10.1 Implementar `escribir_json(ruta_salida, ruta_csv, ruta_esquema, total_filas, hallazgos) -> None`
-         en `src/validador/reporte.py`.
-    - Estructura exacta del diseño: `archivo`, `esquema`, `total_filas`,
-      `total_hallazgos`, `hallazgos`.
-    - `json.dumps` con `ensure_ascii=False`; sobrescribe si existe.
-    - Levanta `OSError` si el directorio destino no existe.
-    - _Requisitos: 8.1, 8.3_
-
-  - [ ] 10.2 Escribir tests de ejemplo en `tests/test_reporte.py`.
-    - `test_req_8_1_json_estructura_correcta`: JSON escrito contiene todos los campos
-      esperados con los valores correctos.
-    - `test_req_8_1_json_hallazgos_campos`: cada objeto en `hallazgos` tiene los cinco
-      campos (`fila`, `columna`, `regla`, `valor`, `mensaje`).
-    - `test_req_8_2_sin_arg_no_escribe_json`: sin `--salida-json` no se genera archivo
-      (se prueba a nivel CLI en la tarea 11).
-    - `test_req_8_3_directorio_inexistente_error`: directorio destino no existe →
-      `OSError`.
-    - _Requisitos: 8.1, 8.3_
-
-  - [ ] 10.3 Escribir property test en `tests/test_reporte.py` usando Hypothesis.
-    - `test_req_8_1_json_serializacion_fiel_propiedad` (Property 18): para cualquier
-      lista de hallazgos, el JSON escrito contiene exactamente esos hallazgos con los
-      cinco campos y los totales correctos.
-    - `@settings(max_examples=200)`.
-    - _Requisitos: 8.1_
-
-- [ ] 11. `cli.py` — interfaz de línea de comandos y coordinación
-  - [ ] 11.1 Implementar `_construir_parser() -> argparse.ArgumentParser` en
-         `src/validador/cli.py`.
-    - Argumento posicional `ruta_csv`.
-    - `--esquema` obligatorio.
-    - `--salida-json` opcional.
-    - `--ayuda` / `-h` manejado por argparse.
-    - _Requisitos: 9.1, 9.2, 9.3_
-
-  - [ ] 11.2 Implementar `_ejecutar_validacion(ruta_csv, ruta_esquema, ruta_salida_json) -> int`
-         en `src/validador/cli.py`.
-    - Orden de validación del diseño: esquema → CSV → col. faltantes → tipos + vacíos +
-      duplicados → reporte.
-    - Si hay col. faltantes: no ejecutar reglas 2–4.
-    - Captura `OSError` y `ValueError`; imprime en `stderr`; devuelve código 2.
-    - Devuelve 0 sin hallazgos, 1 con hallazgos.
-    - _Requisitos: 1.1, 1.2, 1.4, 1.6, 2.1, 3.2, 7.1, 7.2, 7.3, 7.4, 8.1, 8.2, 8.3_
-
-  - [ ] 11.3 Implementar `main() -> None` en `src/validador/cli.py`.
-    - Solo llama a `_construir_parser`, `_ejecutar_validacion` y `sys.exit`.
-    - `print` y `sys.exit` únicamente aquí.
-    - _Requisitos: 9.1, 9.2, 9.3_
-
-  - [ ] 11.4 Escribir tests de integración en `tests/test_cli.py`.
-    - `test_req_9_1_invocacion_correcta_codigo_0`: CSV válido → código 0.
-    - `test_req_9_1_invocacion_correcta_codigo_1`: CSV con hallazgos → código 1.
-    - `test_req_9_2_sin_esquema_codigo_2`: argumento `--esquema` ausente → código 2.
-    - `test_req_1_1_esquema_inexistente_codigo_2`: ruta de esquema no existe → código 2.
-    - `test_req_2_1_csv_inexistente_codigo_2`: ruta CSV no existe → código 2.
-    - `test_req_8_2_sin_salida_json_no_genera_archivo`: sin `--salida-json` no crea
-      archivo JSON.
-    - `test_req_8_1_con_salida_json_crea_archivo`: `--salida-json` → archivo JSON creado.
-    - `test_req_3_2_col_faltante_bloquea_otras_reglas`: col. faltante → sin hallazgos de
-      tipo_invalido ni duplicado.
-    - `test_req_7_3_csv_valido_imprime_sin_hallazgos`: salida stdout contiene
-      `"Sin hallazgos"`.
-    - _Requisitos: 1.1, 2.1, 3.2, 7.3, 7.4, 8.1, 8.2, 9.1, 9.2_
-
-- [ ] 12. `pyproject.toml` — añadir hypothesis al grupo dev
-  - [x] 12.1 Actualizar `[project.optional-dependencies]` en `pyproject.toml` para añadir
-         `"hypothesis>=6"` al grupo `dev`.
-    - El grupo queda: `dev = ["pytest>=8", "hypothesis>=6"]`.
-    - _Requisitos: ninguno (infraestructura de desarrollo)_
-
-  - [ ] 12.2 Copiar los archivos de datos de prueba a `tests/datos/`.
-    - `tests/datos/esquema_ventas.json` (copia de `datos/esquema_ventas.json`).
-    - `tests/datos/ventas_valido.csv` (copia de `datos/ventas_valido.csv`).
-    - `tests/datos/ventas_invalido.csv` (copia de `datos/ventas_invalido.csv`).
-    - _Requisitos: 11.1, 11.2_
-
-- [ ] 13. Checkpoint — suite completa
-  - Ejecutar `python -m pytest -v` para confirmar que todas las pruebas unitarias y de
-    propiedad pasan.
-  - Resolver cualquier fallo antes de continuar. Preguntar al usuario si hay dudas.
-
-- [ ] 14. Prueba de aceptación E2E y rendimiento
-  - [ ] 14.1 Escribir `test_req_11_1_invalido_exactamente_5_hallazgos` en
-         `tests/test_e2e.py`.
-    - Valida `tests/datos/ventas_invalido.csv` con `tests/datos/esquema_ventas.json`.
-    - Verifica exactamente 5 hallazgos con fila, columna, regla y valor esperados:
-      - Fila 3, `fecha`, `tipo_invalido`, `"2026/09/02"`
-      - Fila 3, `cantidad`, `tipo_invalido`, `"diez"`
-      - Fila 4, `id_venta`, `duplicado`, `"2"`
-      - Fila 4, `cliente`, `vacio_obligatorio`, `""`
-      - Fila 5, `valor_unitario`, `vacio_obligatorio`, `""`
+- [ ] 10. Aceptación y cierre
+  - [ ] 10.1 `test_req_11_1_invalido_exactamente_5_hallazgos` en `tests/test_e2e.py`
+    - Usa `datos/ventas_invalido.csv` y `datos/esquema_ventas.json`, con rutas relativas a la raíz.
+    - Verifica los 5 hallazgos esperados (fila, columna, regla, valor) y el código de salida 1.
     - _Requisitos: 11.1_
-
-  - [ ] 14.2 Escribir `test_req_11_2_valido_cero_hallazgos` en `tests/test_e2e.py`.
-    - Valida `tests/datos/ventas_valido.csv` con `tests/datos/esquema_ventas.json`.
-    - Verifica 0 hallazgos y código de salida 0 (vacíos en `observacion` no son
-      hallazgos porque la columna no es obligatoria).
-    - _Requisitos: 11.2_
-
-  - [ ] 14.3 Escribir `test_req_10_1_rendimiento_100k_filas` en `tests/test_e2e.py`.
-    - Genera un CSV de 100 000 filas válidas con `tmp_path` y lo valida.
-    - Mide con `time.perf_counter`; falla si supera 10 segundos.
-    - _Requisitos: 10.1_
-
-- [ ] 15. Checkpoint final — suite E2E y cobertura completa
-  - Ejecutar `python -m pytest -v` para confirmar que toda la suite pasa, incluidos
-    los tests E2E y de rendimiento.
-  - Confirmar que `python -m validador datos/ventas_valido.csv --esquema datos/esquema_ventas.json`
-    termina con código 0 y mensaje `"Sin hallazgos"`.
-  - Preguntar al usuario si desea revisión adicional antes de cerrar.
-
----
+  - [ ] 10.2 Checkpoint final
+    - @verificador: `python -m pytest -q` en verde.
+    - Manual (lo hace el usuario): `python -m validador datos/ventas_valido.csv
+      --esquema datos/esquema_ventas.json` → código 0 y "Sin hallazgos".
 
 ## Notes
 
-- Todas las tareas de prueba son obligatorias (no opcionales). Implementarlas junto a la
-  lógica que verifican.
-- `hypothesis>=6` se necesita para los property tests; añadirlo en la tarea 12 antes de
-  ejecutar la suite completa.
-- Los identificadores de Python siguen la norma del proyecto: sin tildes ni eñes
-  (`anio`, `validar_tipos`).
-- `print` y `sys.exit` solo en `cli.py`; los demás módulos propagan excepciones.
-- Numeración de filas siempre en convención Excel: cabecera = fila 1, primer dato = fila 2.
-- El orden de validación en `cli.py` es determinista: columnas faltantes bloquean las
-  demás reglas (Requisito 3.2).
-
----
+- Alcance reducido por ser un laboratorio: las pruebas de propiedad llegan solo hasta
+  la tarea 6, y las tareas originales 7–15 se consolidaron en 7–10.
+- Criterios sin prueba dedicada (decisión consciente): 3.2, 6.3, 7.1, 7.4, 8.2, 8.3,
+  9.2, 9.3, 10.1 y 11.2.
+- print y sys.exit solo en cli.py; numeración de filas estilo Excel.
 
 ## Task Dependency Graph
 
-```json
+<!-- ```json
 {
   "waves": [
     { "id": 0, "tasks": ["1.1", "1.2"] },
@@ -406,4 +263,4 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     { "id": 13, "tasks": ["14.1", "14.2", "14.3"] }
   ]
 }
-```
+``` -->
