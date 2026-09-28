@@ -257,6 +257,7 @@ def test_req_5_2_vacio_en_no_obligatoria_ignorado() -> None:
 
 from validador.lector import FilaCSV
 from validador.reglas import verificar_tipos
+from validador.reglas import _es_decimal_valido, _es_entero_valido
 
 
 def _fila(numero: int, **campos: str) -> FilaCSV:
@@ -464,3 +465,99 @@ def test_req_4_6_celda_vacia_obligatoria_sin_tipo_invalido() -> None:
     # Solo verificar_vacios genera vacio_obligatorio; verificar_tipos no genera tipo_invalido
     tipos_invalidos = [h for h in hallazgos if h.regla == "tipo_invalido"]
     assert tipos_invalidos == []
+
+
+# ---------------------------------------------------------------------------
+# Tarea 5.4 — pruebas de propiedad para validar tipos (Properties 9, 10 y 11)
+# ---------------------------------------------------------------------------
+
+
+_casos_tipo = st.one_of(
+    st.tuples(st.just("entero"), st.integers().map(str), st.just(True)),
+    st.tuples(
+        st.just("entero"),
+        st.text(min_size=0, max_size=20).map(lambda valor: f"x{valor}"),
+        st.just(False),
+    ),
+    st.tuples(st.just("decimal"), st.integers().map(str), st.just(True)),
+    st.tuples(
+        st.just("decimal"),
+        st.tuples(st.integers(), st.integers(min_value=0, max_value=999999)).map(
+            lambda partes: f"{partes[0]}.{partes[1]}"
+        ),
+        st.just(True),
+    ),
+    st.tuples(
+        st.just("decimal"),
+        st.text(min_size=0, max_size=20).map(lambda valor: f"x{valor}"),
+        st.just(False),
+    ),
+    st.tuples(
+        st.just("fecha"),
+        st.dates().map(lambda valor: valor.isoformat()),
+        st.just(True),
+    ),
+    st.tuples(
+        st.just("fecha"),
+        st.text(min_size=0, max_size=20).map(lambda valor: f"!{valor}"),
+        st.just(False),
+    ),
+    st.tuples(st.just("texto"), st.text(min_size=1, max_size=20), st.just(True)),
+)
+
+
+# Feature: validador-csv, Propiedad 9: valores invalidos generan un solo hallazgo de tipo
+@given(caso=_casos_tipo)
+@settings(max_examples=200)
+def test_req_4_1_tipo_invalido_propiedad(
+    caso: tuple[str, str, bool],
+) -> None:
+    """Una celda tipada inválida genera un hallazgo; una válida, ninguno.
+
+    Validates: Requirements 4.1
+    """
+    tipo, valor, es_valido = caso
+    esquema = _esquema_tipos(("dato", tipo, True))
+    hallazgos = verificar_tipos([_fila(2, dato=valor)], esquema)
+
+    assert len(hallazgos) == (0 if es_valido else 1)
+    if not es_valido:
+        hallazgo = hallazgos[0]
+        assert hallazgo.regla == "tipo_invalido"
+        assert hallazgo.fila == 2
+        assert hallazgo.columna == "dato"
+        assert hallazgo.valor == valor
+        assert tipo in hallazgo.mensaje
+
+
+# Feature: validador-csv, Propiedad 10: entero acepta solo digitos con signo negativo opcional
+@given(valor=st.text(max_size=40))
+@settings(max_examples=200)
+def test_req_4_2_entero_propiedad(valor: str) -> None:
+    """El validador de enteros coincide con la sintaxis de entero puro.
+
+    Validates: Requirements 4.2
+    """
+    digitos = valor[1:] if valor.startswith("-") else valor
+    esperado = bool(digitos) and digitos.isdecimal()
+
+    assert _es_entero_valido(valor) is esperado
+
+
+# Feature: validador-csv, Propiedad 11: decimal acepta digitos y punto decimal opcional
+@given(valor=st.text(max_size=40))
+@settings(max_examples=200)
+def test_req_4_3_decimal_propiedad(valor: str) -> None:
+    """El validador decimal solo acepta formato decimal estricto, sin espacios.
+
+    Validates: Requirements 4.3
+    """
+    cuerpo = valor[1:] if valor.startswith("-") else valor
+    partes = cuerpo.split(".")
+    esperado = (
+        len(partes) == 1 and partes[0].isdecimal()
+    ) or (
+        len(partes) == 2 and partes[0].isdecimal() and partes[1].isdecimal()
+    )
+
+    assert _es_decimal_valido(valor) is esperado

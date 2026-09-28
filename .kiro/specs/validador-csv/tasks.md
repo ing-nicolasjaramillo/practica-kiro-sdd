@@ -116,7 +116,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - `@settings(max_examples=200)`.
     - _Requisitos: 3.1_
 
-- [ ] 0. Reconciliación del avance de Kiro (ver auditoria.md)
+- [x] 0. Reconciliación del avance de Kiro (ver auditoria.md)
 - [x] 0.1 Reparar tests/test_reglas.py sin cambiar comportamiento
   - Eliminar el bloque de pruebas duplicado que queda sombreado y conservar
     una sola versión de cada prueba
@@ -160,7 +160,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - `test_req_4_6_celda_vacia_obligatoria_sin_tipo_invalido`: celda vacía en obligatoria → sin `tipo_invalido`.
     - _Requisitos: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
 
-  - [ ] 5.4 Escribir property tests en `tests/test_reglas.py` usando Hypothesis.
+  - [x] 5.4 Escribir property tests en `tests/test_reglas.py` usando Hypothesis.
     - `test_req_4_1_tipo_invalido_propiedad` (Property 9): celda no vacía e inválida →
       exactamente 1 hallazgo `tipo_invalido`; celda válida → 0 hallazgos.
     - `test_req_4_2_entero_propiedad` (Property 10): `_es_entero_valido` verdadero si y
