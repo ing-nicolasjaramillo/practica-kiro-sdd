@@ -132,7 +132,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     las pruebas existentes del requisito 4.3 deben seguir en verde
   - _Requisitos: 4.3_
 
-- [ ] 5. `reglas.py` — Regla 2: validación de tipos
+- [x] 5. `reglas.py` — Regla 2: validación de tipos
   - [x] 5.1 Implementar las funciones privadas `_es_entero_valido`, `_es_decimal_valido`
         y `_es_fecha_valida` en `src/validador/reglas.py`.
     - `_es_entero_valido`: rechaza decimales, espacios, texto.
