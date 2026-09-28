@@ -178,7 +178,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - Ignora columnas no obligatorias.
     - _Requisitos: 5.1, 5.2_
 
-  - [ ] 6.2 Escribir tests de ejemplo en `tests/test_reglas.py`.
+  - [x] 6.2 Escribir tests de ejemplo en `tests/test_reglas.py`.
     - `test_req_5_1_vacio_en_obligatoria_genera_hallazgo`: celda `""` → 1 hallazgo
       `vacio_obligatorio`.
     - `test_req_5_1_espacios_en_obligatoria_genera_hallazgo`: celda `"   "` → hallazgo.
@@ -188,7 +188,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
       hallazgo.
     - _Requisitos: 5.1, 5.2_
 
-  - [ ] 6.3 Escribir property test en `tests/test_reglas.py` usando Hypothesis.
+  - [x] 6.3 Escribir property test en `tests/test_reglas.py` usando Hypothesis.
     - `test_req_5_1_vacios_propiedad` (Property 12): fila con `K` celdas vacías en
       obligatorias → exactamente `K` hallazgos `vacio_obligatorio` y 0 `tipo_invalido`
       para esas celdas.

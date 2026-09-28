@@ -561,3 +561,36 @@ def test_req_4_3_decimal_propiedad(valor: str) -> None:
     )
 
     assert _es_decimal_valido(valor) is esperado
+
+
+# Feature: validador-csv, Propiedad 12: celdas vacias obligatorias generan solo hallazgos vacio_obligatorio
+@given(
+    valores_vacios=st.lists(
+        st.sampled_from(["", " ", "   ", "\t"]), min_size=1, max_size=10
+    ),
+    valores_validos=st.lists(st.integers().map(str), max_size=10),
+)
+@settings(max_examples=200)
+def test_req_5_1_vacios_propiedad(
+    valores_vacios: list[str], valores_validos: list[str]
+) -> None:
+    """K celdas obligatorias vacias generan K hallazgos sin errores de tipo.
+
+    Validates: Requirements 5.1
+    """
+    valores = valores_vacios + valores_validos
+    columnas = [f"col_{indice}" for indice in range(len(valores))]
+    esquema = _esquema_tipos(
+        *((nombre, "entero", True) for nombre in columnas)
+    )
+    fila = _fila(2, **dict(zip(columnas, valores)))
+
+    hallazgos_vacios = verificar_vacios([fila], esquema)
+    hallazgos_tipos = verificar_tipos([fila], esquema)
+
+    columnas_vacias = set(columnas[: len(valores_vacios)])
+    assert len(hallazgos_vacios) == len(valores_vacios)
+    assert all(h.regla == "vacio_obligatorio" for h in hallazgos_vacios)
+    assert {h.columna for h in hallazgos_vacios} == columnas_vacias
+    assert all(h.fila == 2 for h in hallazgos_vacios)
+    assert not [h for h in hallazgos_tipos if h.columna in columnas_vacias]
