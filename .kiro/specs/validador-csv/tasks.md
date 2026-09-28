@@ -195,8 +195,8 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - `@settings(max_examples=200)`.
     - _Requisitos: 5.1_
 
-- [ ] 7. `reglas.py` — Regla 4: duplicados por clave única
-  - [ ] 7.1 Implementar `verificar_duplicados(filas, esquema) -> list[Hallazgo]`
+- [x] 7. `reglas.py` — Regla 4: duplicados por clave única
+  - [x] 7.1 Implementar `verificar_duplicados(filas, esquema) -> list[Hallazgo]`
     - Clave = valores de `clave_unica` unidos con `|`; la primera aparición no genera hallazgo.
     - Filas con algún valor vacío en la clave se omiten.
     - `mensaje` incluye la fila de la primera aparición.
@@ -204,8 +204,8 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
       `test_req_6_2_mensaje_incluye_primera_fila`, `test_req_6_4_clave_con_vacio_ignorada`.
     - _Requisitos: 6.1, 6.2, 6.4_
 
-- [ ] 8. `reporte.py` — consola y JSON
-  - [ ] 8.1 Implementar `formatear_consola(...) -> str` y `escribir_json(...) -> None`
+- [x] 8. `reporte.py` — consola y JSON
+  - [x] 8.1 Implementar `formatear_consola(...) -> str` y `escribir_json(...) -> None`
     - Consola: total de filas, recuento por regla y detalle ordenado por fila;
       "Sin hallazgos" si la lista está vacía.
     - JSON: `archivo`, `esquema`, `total_filas`, `total_hallazgos`, `hallazgos`;
@@ -214,8 +214,8 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
       `test_req_7_3_sin_hallazgos_mensaje`, `test_req_8_1_json_estructura_correcta`.
     - _Requisitos: 7.2, 7.3, 8.1_
 
-- [ ] 9. `cli.py` — interfaz y coordinación
-  - [ ] 9.1 Implementar `cli.py` (parser, ejecución y `main`) según design.md
+- [x] 9. `cli.py` — interfaz y coordinación
+  - [x] 9.1 Implementar `cli.py` (parser, ejecución y `main`) según design.md
     - Orden: esquema → CSV → columnas faltantes (si hay, no se ejecutan las reglas 2–4)
       → tipos, vacíos y duplicados → reporte.
     - Códigos: 0 sin hallazgos, 1 con hallazgos, 2 ante `OSError`/`ValueError` (mensaje a stderr).
@@ -225,7 +225,7 @@ código ejecutable o tests ejecutables antes de pasar a la siguiente.
     - _Requisitos: 9.1, 2.1_
 
 - [ ] 10. Aceptación y cierre
-  - [ ] 10.1 `test_req_11_1_invalido_exactamente_5_hallazgos` en `tests/test_e2e.py`
+  - [x] 10.1 `test_req_11_1_invalido_exactamente_5_hallazgos` en `tests/test_e2e.py`
     - Usa `datos/ventas_invalido.csv` y `datos/esquema_ventas.json`, con rutas relativas a la raíz.
     - Verifica los 5 hallazgos esperados (fila, columna, regla, valor) y el código de salida 1.
     - _Requisitos: 11.1_

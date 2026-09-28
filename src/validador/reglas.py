@@ -220,3 +220,53 @@ def verificar_vacios(
                 )
 
     return hallazgos
+
+
+def verificar_duplicados(
+    filas: list[FilaCSV],
+    esquema: "Esquema",
+) -> list[Hallazgo]:
+    """Regla 4: detecta filas con clave unica duplicada.
+
+    La clave se construye uniendo los valores de ``esquema.clave_unica`` con
+    ``|``. Las filas con algun componente vacio (incluidos espacios) y los
+    esquemas sin clave definida se omiten.
+
+    Argumentos:
+        filas: Lista de filas CSV numeradas segun la convencion Excel.
+        esquema: Esquema que define las columnas de la clave unica.
+
+    Retorna:
+        Un hallazgo ``duplicado`` por cada aparicion posterior a la primera.
+    """
+    if not esquema.clave_unica:
+        return []
+
+    primera_aparicion: dict[str, int] = {}
+    hallazgos: list[Hallazgo] = []
+
+    for fila in filas:
+        valores = [fila.campos.get(nombre, "") for nombre in esquema.clave_unica]
+        if any(not valor.strip() for valor in valores):
+            continue
+
+        clave = "|".join(valores)
+        if clave not in primera_aparicion:
+            primera_aparicion[clave] = fila.numero
+            continue
+
+        fila_inicial = primera_aparicion[clave]
+        hallazgos.append(
+            Hallazgo(
+                fila=fila.numero,
+                columna=esquema.clave_unica[0],
+                regla="duplicado",
+                valor=clave,
+                mensaje=(
+                    f"La clave '{clave}' esta duplicada; su primera aparicion "
+                    f"fue en la fila {fila_inicial}."
+                ),
+            )
+        )
+
+    return hallazgos

@@ -258,6 +258,7 @@ def test_req_5_2_vacio_en_no_obligatoria_ignorado() -> None:
 from validador.lector import FilaCSV
 from validador.reglas import verificar_tipos
 from validador.reglas import _es_decimal_valido, _es_entero_valido
+from validador.reglas import verificar_duplicados
 
 
 def _fila(numero: int, **campos: str) -> FilaCSV:
@@ -594,3 +595,66 @@ def test_req_5_1_vacios_propiedad(
     assert {h.columna for h in hallazgos_vacios} == columnas_vacias
     assert all(h.fila == 2 for h in hallazgos_vacios)
     assert not [h for h in hallazgos_tipos if h.columna in columnas_vacias]
+
+
+# ---------------------------------------------------------------------------
+# Tarea 7.1 — pruebas para verificar_duplicados (Regla 4)
+# ---------------------------------------------------------------------------
+
+
+def _esquema_con_clave(*nombres: str) -> Esquema:
+    """Construye un esquema de texto con las columnas indicadas como clave unica."""
+    columnas = tuple(
+        ColumnaEsquema(nombre=nombre, tipo="texto", obligatoria=False)
+        for nombre in nombres
+    )
+    return Esquema(columnas=columnas, clave_unica=nombres, delimitador=",")
+
+
+def test_req_6_1_duplicado_segunda_aparicion() -> None:
+    """Solo las apariciones posteriores de una clave generan hallazgos duplicado."""
+    esquema = _esquema_con_clave("id")
+    filas = [
+        _fila(2, id="A"),
+        _fila(3, id="A"),
+        _fila(4, id="A"),
+    ]
+
+    hallazgos = verificar_duplicados(filas, esquema)
+
+    assert [(h.fila, h.regla) for h in hallazgos] == [
+        (3, "duplicado"),
+        (4, "duplicado"),
+    ]
+
+
+def test_req_6_2_mensaje_incluye_primera_fila() -> None:
+    """El hallazgo indica la fila inicial de la clave y la primera columna clave."""
+    esquema = _esquema_con_clave("tipo", "id")
+    filas = [
+        _fila(2, tipo="venta", id="17"),
+        _fila(5, tipo="venta", id="17"),
+    ]
+
+    hallazgos = verificar_duplicados(filas, esquema)
+
+    assert len(hallazgos) == 1
+    assert hallazgos[0].columna == "tipo"
+    assert "2" in hallazgos[0].mensaje
+    assert hallazgos[0].valor == "venta|17"
+
+
+def test_req_6_4_clave_con_vacio_ignorada() -> None:
+    """Una fila con un componente vacío no participa en la detección de duplicados."""
+    esquema = _esquema_con_clave("tipo", "id")
+    filas = [
+        _fila(2, tipo="venta", id=""),
+        _fila(3, tipo="venta", id=""),
+        _fila(4, tipo="", id="17"),
+        _fila(5, tipo="venta", id="17"),
+        _fila(6, tipo="venta", id="17"),
+    ]
+
+    hallazgos = verificar_duplicados(filas, esquema)
+
+    assert [(h.fila, h.valor) for h in hallazgos] == [(6, "venta|17")]
