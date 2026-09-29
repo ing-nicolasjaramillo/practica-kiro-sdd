@@ -1,5 +1,6 @@
 id_venta,fecha,cliente,cantidad,valor_unitario
 1,2026-09-01,Ferretería Central,3,15000.50
 2,2026/09/02,Distribuidora Andina,diez,8200
-2,2026-09-03,,1,120000
+2,2026-09-03,n/a,1,120000
 4,2026-09-04,Tienda La Esquina,2,
+5,2026-09-04,Tienda La Esquina,2,10000
